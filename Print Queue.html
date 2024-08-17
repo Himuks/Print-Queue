@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Queue Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .form-container, .queue-container {
+            margin: 20px 0;
+        }
+
+        input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:active {
+            background-color: #0056b3;
+        }
+
+        .queue-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .queue-container li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .process-button {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .code-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            overflow: auto;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Print Queue Management</h1>
+        <div class="form-container">
+            <input type="text" id="user1" placeholder="User 1 Name">
+            <input type="text" id="fileName1" placeholder="File Name">
+            <button onclick="addToQueue('user1', 'fileName1')">Add to Queue User 1</button>
+        </div>
+        <div class="form-container">
+            <input type="text" id="user2" placeholder="User 2 Name">
+            <input type="text" id="fileName2" placeholder="File Name">
+            <button onclick="addToQueue('user2', 'fileName2')">Add to Queue User 2</button>
+        </div>
+        <div class="form-container">
+            <input type="text" id="user3" placeholder="User 3 Name">
+            <input type="text" id="fileName3" placeholder="File Name">
+            <button onclick="addToQueue('user3', 'fileName3')">Add to Queue User 3</button>
+        </div>
+        <div class="queue-container">
+            <h2>Print Queue</h2>
+            <ul id="queue"></ul>
+        </div>
+        <button class="process-button" onclick="processQueue()">Process Queue</button>
+        <button class="process-button" onclick="processAll()">Process All</button>
+    </div>
+    <div class="code-container">
+        <h2>C++ Code</h2>
+        <pre><code>
+#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;string&gt;
+
+struct PrintJob {
+    std::string user;
+    std::string fileName;
+
+    PrintJob(const std::string &u, const std::string &f) : user(u), fileName(f) {}
+};
+
+class PrintQueue {
+private:
+    std::queue&lt;PrintJob&gt; queue;
+
+public:
+    void addToQueue(const std::string &user, const std::string &fileName) {
+        PrintJob job(user, fileName);
+        queue.push(job);
+        std::cout &lt;&lt; "Added to queue: " &lt;&lt; user &lt;&lt; " - " &lt;&lt; fileName &lt;&lt; std::endl;
+    }
+
+    void processQueue() {
+        while (!queue.empty()) {
+            PrintJob job = queue.front();
+            queue.pop();
+            std::cout &lt;&lt; "Printing: " &lt;&lt; job.user &lt;&lt; " - " &lt;&lt; job.fileName &lt;&lt; std::endl;
+            printFile(job.user, job.fileName);
+        }
+    }
+
+private:
+    void printFile(const std::string &user, const std::string &fileName) {
+        std::cout &lt;&lt; "Print job complete: " &lt;&lt; user &lt;&lt; " - " &lt;&lt; fileName &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    PrintQueue printQueue;
+    printQueue.addToQueue("User1", "File1.pdf");
+    printQueue.addToQueue("User2", "File2.pdf");
+    printQueue.addToQueue("User3", "File3.pdf");
+
+    printQueue.processQueue();
+
+    return 0;
+}
+        </code></pre>
+    </div>
+    <script>
+        let queue = [];
+
+        function addToQueue(userFieldId, fileFieldId) {
+            const user = document.getElementById(userFieldId).value;
+            const fileName = document.getElementById(fileFieldId).value;
+            if (user && fileName) {
+                queue.push({ user, fileName });
+                updateQueueDisplay();
+                document.getElementById(userFieldId).value = '';
+                document.getElementById(fileFieldId).value = '';
+            }
+        }
+
+        function updateQueueDisplay() {
+            const queueElement = document.getElementById('queue');
+            queueElement.innerHTML = '';
+            queue.forEach((job, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${job.user} - ${job.fileName}`;
+                queueElement.appendChild(listItem);
+            });
+        }
+
+        function processQueue() {
+            if (queue.length > 0) {
+                const currentJob = queue.shift();
+                alert(`Printing: ${currentJob.user} - ${currentJob.fileName}`);
+                updateQueueDisplay();
+            } else {
+                alert('Queue is empty!');
+            }
+        }
+
+        function processAll() {
+            while (queue.length > 0) {
+                const currentJob = queue.shift();
+                alert(`Printing: ${currentJob.user} - ${currentJob.fileName}`);
+            }
+            updateQueueDisplay();
+        }
+    </script>
+</body>
+</html>
